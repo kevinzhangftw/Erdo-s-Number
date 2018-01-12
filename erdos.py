@@ -7,6 +7,8 @@ def splitOnEverySecondComma(rawNamesList):
 	while len(groups):
 		nameList.append(','.join(groups[:n]))
 		groups = groups[n:]
+
+	nameList[0] = ' ' + nameList[0]
 	return nameList
 
 def buildList(line):
@@ -23,7 +25,10 @@ def buildGraph(lst):
 		# print(scientist)
 		lstCopy = copy.deepcopy(lst)
 		lstCopy.remove(scientist)
-		adjacencyList[scientist] = lstCopy  
+		if scientist in adjacencyList.keys():
+			adjacencyList[scientist].append(lstCopy)
+		else:
+			adjacencyList[scientist] = lstCopy  
 
 def nomatch():
 	return 'infinity'
