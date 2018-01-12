@@ -1,3 +1,4 @@
+import copy
 
 def splitOnEverySecondComma(rawNamesList):
 	n = 2
@@ -15,34 +16,21 @@ def buildList(line):
 	# print(nameList)
 	return nameList
 
-def updateDB(list):
-	for scientist in list:
-		if scientist == 'Erdos, P.':
-			continue
-		else:
-			db.update({scientist:1})
+# def updateDB(list):
 
-
-def areErdosNeighbors(list):
-	for scientist in list:
-		if scientist == 'Erdos, P.':
-			return True
-	return False
-
-# def areErdosGreatNeighbors(list):
-
+def buildGraph(lst):
+	for scientist in lst:
+		# print(scientist)
+		lstCopy = copy.deepcopy(lst)
+		lstCopy.remove(scientist)
+		adjacencyList[scientist] = lstCopy  
 
 def nomatch():
 	return 'infinity'
 
 def buildDB(line):
 	lst = buildList(line)
-	if areErdosNeighbors(lst):
-		updateDB(lst)
-	# elif areErdosGreatNeighbors(list):
-	# 	updateDB(list)
-	else:
-		nomatch()
+	buildGraph(lst)
 	
 
 scenario = input()
@@ -52,13 +40,15 @@ n= int(pandn[1])
 # print("p", p)
 # print("n", n)
 db = {'Erdos, P.': 0}
+adjacencyList = {}
 
 for line in range(p):
 	line = input()
 	# print(line)
 	buildDB(line)
 
-print(db)
+print('db: ', db)
+print('adjacencyList: ', adjacencyList)
 
 # for line in range(n):
 # 	findMatch(line)
