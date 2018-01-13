@@ -26,7 +26,7 @@ def buildGraph(lst):
 		lstCopy = copy.deepcopy(lst)
 		lstCopy.remove(scientist)
 		if scientist in adjacencyList.keys():
-			adjacencyList[scientist].append(lstCopy)
+			adjacencyList[scientist] = adjacencyList[scientist] + lstCopy
 		else:
 			adjacencyList[scientist] = lstCopy  
 
