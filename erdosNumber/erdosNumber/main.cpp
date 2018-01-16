@@ -24,6 +24,12 @@ void printVec(vector<string> input){
     }
 }
 
+void printMap(map<string,int> input){
+    for(auto elem : input){
+        std::cout << elem.first << " " << elem.second << "\n";
+    }
+}
+
 void ComputeErdosNumbers(string FullName, map<string,vector<string> > CoAuthors, bool start){
     
 }
@@ -72,6 +78,12 @@ vector < string > extract_name(string &line){
     return authors;
 }
 
+void initializeErdosNumbers(vector<string> PaperAuthors){
+    for (int i=0; i<PaperAuthors.size(); i++) {
+        ErdosNumbers[PaperAuthors[i]] = -1;
+    }
+}
+
 vector<string> buildList(vector<string> postPreProcessingList){
     
     return postPreProcessingList;
@@ -103,6 +115,9 @@ int main(){
             PaperAuthors = extract_name(line_part_1);
 //            cout<< "-"<< endl;
 //            printVec(PaperAuthors);
+            initializeErdosNumbers(PaperAuthors);
+//            cout<< "-"<< endl;
+//            printMap(ErdosNumbers);
             
         }
         
