@@ -24,9 +24,9 @@ void printVec(vector<string> input){
     }
 }
 
-void printMap(map<string,int> input){
+void printMap(map<string,vector<string> > input){
     for(auto elem : input){
-        std::cout << elem.first << " " << elem.second << "\n";
+        cout << elem.first << "\n";
     }
 }
 
@@ -48,22 +48,6 @@ vector<string> split(string str, char delimiter){
 
 
 vector < string > extract_name(string &line){
-//    vector < string > list;
-//    string::size_type begin(0);
-//    string::size_type end = line.find(".,", begin);
-//
-//    while (end != string::npos){
-//        list.push_back(line.substr(begin, end - begin + 1));
-//
-//        begin = end + 3;
-//        end = line.find(".,", begin);
-//    }
-//
-//    if (begin < (line.length() - 1))
-//        list.push_back(line.substr(begin));
-//
-//    return list;
-
     vector < string > authors;
     vector<string> list = split(line, ',');
     for (int j=0; j<list.size(); j=j+2) {
@@ -84,44 +68,47 @@ void initializeErdosNumbers(vector<string> PaperAuthors){
     }
 }
 
-vector<string> buildList(vector<string> postPreProcessingList){
-    
-    return postPreProcessingList;
+map<string,vector<string> > buildList(vector<string> authors){
+    map<string,vector<string> > adjacenylist;
+    for (int i =0; i<authors.size(); i++) {
+        for (int j=0; j<authors.size(); j++) {
+            if (authors[i] != authors[j]) {
+                vector<string>::iterator it = find(adjacenylist[authors[i]].begin(),
+                          adjacenylist[authors[i]].end(), authors[j]);
+                if (it == adjacenylist[authors[i]].end()) {
+                    //authors[j] not found, safe to add list
+                    adjacenylist[authors[i]].push_back(authors[j]);
+                }
+            }
+        }
+    }
+    return adjacenylist;
 }
 
 int main(){
     int scenarioNumber;
     cin >> scenarioNumber;
-    
     for (int i=0; i<scenarioNumber; i++) {
         int p, n;
-        cin >> p;
-        cin >> n;
+        cin >> p >> n;
         map<string,vector<string> > AdjacenyList;
-        
-//        char PaperString[500000];
-        
-        for (int j=0; j<p; p++) {
-//            string Names;
-//            gets(PaperString);
-//            vector<string> PaperAuthors;
-//            stringstream s(PaperString);
-//            getline(s,Names,':');
-//            cout << "Names: " << Names << endl;
+        for (int j=0; j<p; j++) {
             vector<string> PaperAuthors;
             string line_part_1, line_part_2;
             getline(cin, line_part_1, ':');
             getline(cin, line_part_2);
             PaperAuthors = extract_name(line_part_1);
-//            cout<< "-"<< endl;
-//            printVec(PaperAuthors);
             initializeErdosNumbers(PaperAuthors);
-//            cout<< "-"<< endl;
-//            printMap(ErdosNumbers);
-            
+            AdjacenyList = buildList(PaperAuthors);
         }
+        vector<string> queries;
+        string authorName;
+        for (int k=0; k<n; k++){
+            getline(cin, authorName);
+            queries.push_back(authorName);
+        }
+        ErdosNumbers["Erdos, P."] = 0;
+        ComputeErdosNumbers("",AdjacenyList,true);
         
-
     }
-    
 }
