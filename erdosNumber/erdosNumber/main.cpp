@@ -24,20 +24,35 @@ void printVec(vector<string> input){
     }
 }
 
-void printMap(map<string,vector<string> > input){
+void printMap(map<string,int> input){
     for(auto elem : input){
         cout << elem.first << "\n";
     }
 }
 
-void ComputeErdosNumbers(string FullName, map<string,vector<string> > CoAuthors, bool start){
+void ComputeErdosNumbers(map<string,vector<string> > adjList){
+    //                adapted from https://codingstrife.wordpress.com/2013/07/11/solution-uva10044-pc110206-erdos-numbers/
+    vector<string> oldList, newList;
+    for (int i=0; i<adjList["Erdos, P."].size(); i++)
+        ErdosNumbers[adjList["Erdos, P."][i]] = 1;
+    newList = adjList["Erdos, P."];
     
+    while(!newList.empty()){
+        for (int i=0; i<newList.size(); i++)
+            for (int j=0; j< adjList[newList[i]].size(); j++)
+                if (ErdosNumbers[adjList[newList[i]][j]]  >  ErdosNumbers[newList[i]] + 1
+                    || ErdosNumbers[adjList[newList[i]][j]] == -1){
+                    ErdosNumbers[adjList[newList[i]][j]] = ErdosNumbers[newList[i]] + 1;
+                    oldList.push_back(adjList[newList[i]][j]);
+                }
+        newList = oldList;
+        oldList.clear();
+    }
 }
 
 vector<string> split(string str, char delimiter){
     stringstream ss(str);
     vector<string> output;
-    
     while (ss.good()) {
         string substr;
         getline(ss, substr, delimiter);
@@ -50,6 +65,7 @@ vector<string> split(string str, char delimiter){
 vector < string > extract_name(string &line){
     vector < string > authors;
     vector<string> list = split(line, ',');
+    //                adapted from https://codingstrife.wordpress.com/2013/07/11/solution-uva10044-pc110206-erdos-numbers/
     for (int j=0; j<list.size(); j=j+2) {
         string full_name = list[j]+ ',' +list[j+1];
         if(j == 0)
@@ -68,11 +84,11 @@ void initializeErdosNumbers(vector<string> PaperAuthors){
     }
 }
 
-map<string,vector<string> > buildList(vector<string> authors){
-    map<string,vector<string> > adjacenylist;
-    for (int i =0; i<authors.size(); i++) {
+map<string,vector<string> > buildList(vector<string> authors, map<string,vector<string> > adjacenylist){
+        for (int i =0; i<authors.size(); i++) {
         for (int j=0; j<authors.size(); j++) {
             if (authors[i] != authors[j]) {
+//                adapted from https://codingstrife.wordpress.com/2013/07/11/solution-uva10044-pc110206-erdos-numbers/
                 vector<string>::iterator it = find(adjacenylist[authors[i]].begin(),
                           adjacenylist[authors[i]].end(), authors[j]);
                 if (it == adjacenylist[authors[i]].end()) {
@@ -83,6 +99,27 @@ map<string,vector<string> > buildList(vector<string> authors){
         }
     }
     return adjacenylist;
+}
+
+vector<string> loadQueries(int n){
+    vector<string> queries;
+    string authorName;
+    for (int k=0; k<n; k++){
+        getline(cin, authorName);
+        queries.push_back(authorName);
+    }
+    return queries;
+}
+
+void printResults(int n, vector<string> queries){
+    //adapted from https://codingstrife.wordpress.com/2013/07/11/solution-uva10044-pc110206-erdos-numbers/
+    for (int j=0; j<n; j++){
+        cout << queries[j] << " ";
+        map<string,int>::iterator it = ErdosNumbers.find(extract_name(queries[j])[0]);
+        if (it == ErdosNumbers.end() || it->second == -1) cout << "infinity";
+        else cout << it->second;
+        cout << endl;
+    }
 }
 
 int main(){
@@ -99,16 +136,14 @@ int main(){
             getline(cin, line_part_2);
             PaperAuthors = extract_name(line_part_1);
             initializeErdosNumbers(PaperAuthors);
-            AdjacenyList = buildList(PaperAuthors);
+            AdjacenyList = buildList(PaperAuthors, AdjacenyList);
         }
-        vector<string> queries;
-        string authorName;
-        for (int k=0; k<n; k++){
-            getline(cin, authorName);
-            queries.push_back(authorName);
-        }
+        vector<string> queries = loadQueries(n);
         ErdosNumbers["Erdos, P."] = 0;
-        ComputeErdosNumbers("",AdjacenyList,true);
+        ComputeErdosNumbers(AdjacenyList);
+//        printMap(ErdosNumbers);
         
+        cout << "Scenario " << i+1 << endl;
+        printResults(n, queries);
     }
 }
