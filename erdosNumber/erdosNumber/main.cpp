@@ -18,17 +18,17 @@ using namespace std;
 map<string,int> ErdosNumbers;
 map<string,bool> Visited;
 
-void printVec(vector<string> input){
-    for (int i =0; i< input.size(); i++) {
-        cout << input.at(i) << " - ";
-    }
-}
-
-void printMap(map<string,int> input){
-    for(auto elem : input){
-        cout << elem.first << "\n";
-    }
-}
+//void printVec(vector<string> input){
+//    for (int i =0; i< input.size(); i++) {
+//        cout << input.at(i) << " - ";
+//    }
+//}
+//
+//void printMap(map<string,int> input){
+//    for(auto elem : input){
+//        cout << elem.first << "\n";
+//    }
+//}
 
 void ComputeErdosNumbers(map<string,vector<string> > adjList){
     //                adapted from https://codingstrife.wordpress.com/2013/07/11/solution-uva10044-pc110206-erdos-numbers/
@@ -61,7 +61,6 @@ vector<string> split(string str, char delimiter){
     return output;
 }
 
-
 vector < string > extract_name(string &line){
     vector < string > authors;
     vector<string> list = split(line, ',');
@@ -85,7 +84,7 @@ void initializeErdosNumbers(vector<string> PaperAuthors){
 }
 
 map<string,vector<string> > buildList(vector<string> authors, map<string,vector<string> > adjacenylist){
-        for (int i =0; i<authors.size(); i++) {
+    for (int i =0; i<authors.size(); i++) {
         for (int j=0; j<authors.size(); j++) {
             if (authors[i] != authors[j]) {
 //                adapted from https://codingstrife.wordpress.com/2013/07/11/solution-uva10044-pc110206-erdos-numbers/
@@ -136,13 +135,26 @@ int main(){
             getline(cin, line_part_2);
             PaperAuthors = extract_name(line_part_1);
             initializeErdosNumbers(PaperAuthors);
-            AdjacenyList = buildList(PaperAuthors, AdjacenyList);
+//            AdjacenyList = buildList(PaperAuthors, AdjacenyList);
+            //here i copied buildList function into here, see buildList() for reference 
+            for (int i =0; i<PaperAuthors.size(); i++) {
+                for (int j=0; j<PaperAuthors.size(); j++) {
+                    if (PaperAuthors[i] != PaperAuthors[j]) {
+                        //                adapted from https://codingstrife.wordpress.com/2013/07/11/solution-uva10044-pc110206-erdos-numbers/
+                        vector<string>::iterator it = find(AdjacenyList[PaperAuthors[i]].begin(),
+                                                           AdjacenyList[PaperAuthors[i]].end(), PaperAuthors[j]);
+                        if (it == AdjacenyList[PaperAuthors[i]].end()) {
+                            //authors[j] not found, safe to add list
+                            AdjacenyList[PaperAuthors[i]].push_back(PaperAuthors[j]);
+                        }
+                    }
+                }
+            }
+         //
         }
         vector<string> queries = loadQueries(n);
         ErdosNumbers["Erdos, P."] = 0;
         ComputeErdosNumbers(AdjacenyList);
-//        printMap(ErdosNumbers);
-        
         cout << "Scenario " << i+1 << endl;
         printResults(n, queries);
     }
